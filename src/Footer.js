@@ -1,12 +1,14 @@
 import  'react-circular-progressbar/dist/styles.css' ;
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 
 function Progress(){
+    let navigate = useNavigate();
      const frase = "Hoje"
      return(
-         <Circulo> 
+         <Circulo onClick={()=>navigate("/hoje")}> 
              <CircularProgressbar  value = {70} text={frase} 
              styles={buildStyles({
                 textSize: '25px',
@@ -21,12 +23,13 @@ function Progress(){
      )
 }
 export default function Footer(){
+    let navigate = useNavigate();
     return(
         <>
         <Rodape> 
-        <Habit>Hábitos</Habit>
-        <Progress />
-        <Historico>Histórico</Historico>
+        <Habit onClick={()=>navigate("/habitos")}>Hábitos</Habit>
+        <Progress/>
+        <Historico onClick={()=>navigate("/historico")}>Histórico</Historico>
         </Rodape>
         </>
     )

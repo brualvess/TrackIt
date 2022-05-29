@@ -4,9 +4,12 @@ import styled from 'styled-components';
 import { ThreeDots } from 'react-loader-spinner';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import UserContext from "./UserContext";
 
 
 export default function Initial() {
+    const {setUsuario}=useContext(UserContext)
     let navigate = useNavigate();
     const [loading, setLoading] = useState("")
     const [email, setEmail] = useState("");
@@ -25,8 +28,9 @@ export default function Initial() {
             alert("Falha no login")
             setLoading("")
     }
-    function tratarSucesso(){
+    function tratarSucesso(resposta){
             navigate("/hoje")
+            setUsuario(resposta.data)
     }
 
     return (
