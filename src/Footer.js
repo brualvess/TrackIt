@@ -38,7 +38,7 @@ const Rodape = styled.div`
 display: flex;
 width:100%;
 bottom: 0;
-position: absolute;
+position: fixed;
 justify-content: space-between;
 `
 const Habit = styled.div`

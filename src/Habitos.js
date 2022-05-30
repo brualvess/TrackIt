@@ -6,60 +6,120 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useContext } from "react";
 import UserContext from './UserContext';
-function Dias(props){
-    const {numero, dia, setDias}=props 
+function Dias(props) {
+    const { numero, dia, setDias, dias } = props
     const [cor, setCor] = useState("")
-    function alteracoes(){
+    function alteracoes() {
         setCor("selecionado")
-        setDias([...[numero]])
-
-    }
-    return(
-        <>
-        {
-           
-            (cor=="")?
+        setDias([...dias,numero])
         
-            <Day onClick={alteracoes}>{dia}</Day>
-            :
-            <Dia>{dia}</Dia>
-
-           
-        }
-         </>
-    
-    )
-    
-}
-function CriarHabito() {
-    const [dias, setDias]= useState([])
+    }
     return (
         <>
-        <DadosHabit>
-            <DadosDoHabito>
-                <input placeholder='nome do hábito' />
-            </DadosDoHabito>
-            <Days>
-                <Dias numero={0} setDias={setDias} dia='D'/>
-                <Dias numero={1} setDias={setDias} dia='S'/>
-                <Dias numero={2} setDias={setDias} dia='T'/>
-                <Dias numero={3} setDias={setDias} dia='Q'/>
-                <Dias numero={4} setDias={setDias} dia='Q'/>
-                <Dias numero={5} setDias={setDias} dia='S'/>
-                <Dias numero={6} setDias={setDias} dia='S'/>
-             
-            </Days>
-            <CancSalvar> 
-            <Cancelar>Cancelar</Cancelar>
-            <Salvar><Save>Salvar</Save></Salvar>
-            </CancSalvar>
-            </DadosHabit>
+            {
+
+                (cor == "") ?
+
+                    <Day onClick={alteracoes}>{dia}</Day>
+                    :
+                    <Dia>{dia}</Dia>
+
+
+            }
         </>
 
     )
+
+}
+function CriarHabito(props) {
+
+    const {setAddHabito, setListar}=props
+    const [dias, setDias] = useState([])
+    const [nome, setNome] = useState("");
+    const { usuario } = useContext(UserContext)
+    const [loading, setLoading] = useState("")
+    console.log(dias)
+
+    const config = {
+        headers: {
+            "Authorization": `Bearer ${usuario.token}`
+        }
+    }
+    function adicionarHabitos () {
+        setLoading("desabilitou")
+        const promise = axios.post('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits',
+            {
+                name: nome,
+                days: dias
+            }, config)
+
+            promise.catch(tratarError)
+             promise.then(tratarSucesso)
+    }
+    function tratarError(){
+        alert("Falha ao criar hábito")
+        setLoading("")
+    }
+    function tratarSucesso(){
+        setDias([]) 
+        setNome("") 
+        setAddHabito("")
+        const promise = axios.get('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits', config)
+        promise.then(resposta => setListar(resposta.data))
+    
+    }
+    
+    return (
+        <>
+        {
+            (loading!="desabilitou") ?
+            <DadosHabit>
+                <DadosDoHabito>
+                    <input placeholder='nome do hábito' value={nome} onChange={e => setNome(e.target.value)} />
+                </DadosDoHabito>
+                <Days>
+                    <Dias numero={0} setDias={setDias} dia='D' dias={dias} />
+                    <Dias numero={1} setDias={setDias} dia='S'dias={dias} />
+                    <Dias numero={2} setDias={setDias} dia='T'dias={dias} />
+                    <Dias numero={3} setDias={setDias} dia='Q'dias={dias} />
+                    <Dias numero={4} setDias={setDias} dia='Q'dias={dias} />
+                    <Dias numero={5} setDias={setDias} dia='S'dias={dias} />
+                    <Dias numero={6} setDias={setDias} dia='S'dias={dias} />
+
+                </Days>
+                <CancSalvar>
+                    <Cancelar onClick={()=>  setAddHabito("")}>Cancelar</Cancelar>
+                    <Salvar onClick={adicionarHabitos}><Save>Salvar</Save></Salvar>
+                </CancSalvar>
+            </DadosHabit>
+            :
+            <DadosHabit>
+            <DadosDoHabito>
+                <input placeholder='nome do hábito' value={nome} disabled />
+            </DadosDoHabito>
+            <Days>
+                <Dias numero={0} dia='D' />
+                <Dias numero={1} dia='S' />
+                <Dias numero={2} dia='T' />
+                <Dias numero={3} dia='Q' />
+                <Dias numero={4} dia='Q' />
+                <Dias numero={5} dia='S' />
+                <Dias numero={6} dia='S' />
+
+            </Days>
+            <CancSalvar>
+                <Cancelar>Cancelar</Cancelar>
+                <Salvar ><Save>Salvar</Save></Salvar>
+            </CancSalvar>
+        </DadosHabit>
+            }
+        </>
+
+    )
+
 }
 export default function Habitos() {
-    const [addHabito, setAddHabito]=useState("")
+    const [addHabito, setAddHabito] = useState("")
     const { usuario } = useContext(UserContext)
     const [listar, setListar] = useState([])
 
@@ -72,16 +132,17 @@ export default function Habitos() {
         const promise = axios.get('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits', config)
         promise.then(resposta => setListar(resposta.data))
     }, [])
-    console.log(listar)
+
     return (
         <>
             <Header />
+            <Inclusos>
             <MeusHabitos>
                 <Subtitulo>Meus hábitos</Subtitulo>
-                <ion-icon onClick={()=>setAddHabito('add')} name="add-circle"></ion-icon>
+                <ion-icon onClick={() => setAddHabito('add')} name="add-circle"></ion-icon>
             </MeusHabitos>
             {
-                (addHabito != "") ? <CriarHabito /> : ""
+                (addHabito != "") ? <CriarHabito setAddHabito={setAddHabito} setListar={setListar} /> : ""
             }
             {
                 (listar.length == 0) ?
@@ -89,13 +150,68 @@ export default function Habitos() {
                         Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!
                     </SemHabitos>
                     :
-                    <SemHabitos>BIRINBAU</SemHabitos>
+                    <ComHabitos>
+                        {listar.map((habitos, index) => <ListarHabitos nome={habitos.name} dias={habitos.days} id={habitos.id}
+                        setListar = {setListar} key={index} />)}
+                    </ComHabitos>
             }
-             
+            </Inclusos>
+
             <Footer />
         </>
 
     )
+}
+function ListarHabitos(props) {
+    const { nome, dias, id, setListar} = props
+    const { usuario } = useContext(UserContext)
+    const config = {
+        headers: {
+            "Authorization": `Bearer ${usuario.token}`
+        }
+    }
+    function deletarHabito(){
+       if(window.confirm("Tem certeza que deseja excluir ?") == true){
+       const promise = axios.delete(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}`, config)
+       promise.then(request)
+       }
+     
+    }
+    function request(){
+        const promise = axios.get('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits', config)
+        promise.then(resposta => setListar(resposta.data))
+    }
+    return (
+        <Todos>
+
+            <NomeDoHabito>
+                {nome}
+            <ion-icon onClick={deletarHabito} name="trash-outline"></ion-icon>
+            </NomeDoHabito>
+            <TodosDias>
+                <DiaHabitos numero={0} dia='D' dias={dias} />
+                <DiaHabitos numero={1} dia='S' dias={dias}/>
+                <DiaHabitos numero={2} dia='T' dias={dias}/>
+                <DiaHabitos numero={3} dia='Q' dias={dias}/>
+                <DiaHabitos numero={4} dia='Q' dias={dias}/>
+                <DiaHabitos numero={5} dia='S' dias={dias}/>
+                <DiaHabitos numero={6} dia='S' dias={dias}/>
+
+
+            </TodosDias>
+        </Todos>
+    )
+}
+function DiaHabitos(props){
+    const {numero, dia, dias} = props
+    return(
+        <>
+        {
+            (dias.includes(numero)) ?  <Dia>{dia}</Dia> :  <Day>{dia}</Day>
+        }
+        </>
+    )
+
 }
 const MeusHabitos = styled.div`
 display:flex;
@@ -155,7 +271,7 @@ input::placeholder{
 }
 `
 const Days = styled.div`
-width: 100%;
+width: 50%;
 display: flex;
 margin-top: 20px;
 margin-left: 62px;
@@ -235,6 +351,51 @@ font-size: 19.976px;
 color: #FFFFFF;
 
 `
+const ComHabitos = styled.div`
+margin-top: 25px;
+
+
+`
+const NomeDoHabito = styled.div`
+font-family: 'Lexend Deca';
+font-style: normal;
+font-weight: 600;
+font-size: 20px;
+color: #666666;
+display: flex;
+justify-content: space-between;
+margin-left: 60px;
+margin-top: 20px;
+
+ion-icon{
+   width: 20px;
+   height: 20px;
+   margin-right: 30px
+
+}
+
+`
+const TodosDias = styled.div`
+width: 50%;
+display: flex;
+margin-top: 20px;
+margin-left: 62px;
+
+`
+const Todos = styled.div`
+border-radius: 7px;
+background: #E5E5E5;
+
+
+`
+const Inclusos = styled.div`
+margin-bottom: 120px;
+`
+
+
+
+
+
 
 
 
