@@ -29,8 +29,9 @@ export default function Initial() {
             setLoading("")
     }
     function tratarSucesso(resposta){
+        setUsuario(resposta.data)
             navigate("/hoje")
-            setUsuario(resposta.data)
+           
     }
 
     return (
