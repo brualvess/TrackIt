@@ -40,6 +40,8 @@ width:100%;
 bottom: 0;
 position: fixed;
 justify-content: space-between;
+height: 80px;
+background: #F5F5F5;
 `
 const Habit = styled.div`
 font-family: 'Lexend Deca';
