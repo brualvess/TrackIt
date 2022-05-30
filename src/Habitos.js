@@ -383,8 +383,9 @@ margin-left: 62px;
 
 `
 const Todos = styled.div`
-border-radius: 7px;
-background: #E5E5E5;
+border-radius: 5px;
+background:		#F5F5F5;
+
 
 
 `

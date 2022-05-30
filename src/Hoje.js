@@ -96,6 +96,7 @@ const Container = styled.div`
 margin-top: 100px;
 
 
+
 `
 const Caixinha = styled.div`
 display:flex;
@@ -103,9 +104,13 @@ justify-content: space-between;
 width: 80%;
 margin-left: 40px;
 
+
+
+
 `
 const Dados = styled.div`
 margin-top: 20px;
+
 
 
 `
